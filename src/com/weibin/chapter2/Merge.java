@@ -8,6 +8,11 @@ import static com.weibin.chapter2.Example.show;
 
 /**
  * 归并排序：将两个不同的有序数组归并到第三个数组中。
+ * 每次合并操作的平均时间复杂度为O(n)，
+ * 而完全二叉树的深度为|log2n|。
+ * 总的平均时间复杂度为O(nlogn)。
+ * 归并排序的最好，最坏，平均时间复杂度均为O(nlogn)。
+ * 递归深度为log2n。
  * Created by wei.bin on 2017/9/21.
  */
 public class Merge {
@@ -18,17 +23,25 @@ public class Merge {
         assert isSorted(a, lo, mid);
         assert isSorted(a, mid+1, hi);
 
-        // copy to aux[]
+        // 将数组复制到aux[]
         for (int k = lo; k <= hi; k++) {
             aux[k] = a[k];
         }
 
-        // merge back to a[]
-        int i = lo, j = mid+1;
+        // 归并回到a[]
+        // 左序列指针
+        int i = lo;
+        //右序列指针
+        int j = mid+1;
+        //循环的判断 填充数组
         for (int k = lo; k <= hi; k++) {
+            //左半边元素用尽，取右边
             if      (i > mid)              a[k] = aux[j++];
+            //右半边用尽，去左边
             else if (j > hi)               a[k] = aux[i++];
+            //右半边的当前元素小于左边的当前元素，取右半边的元素
             else if (less(aux[j], aux[i])) a[k] = aux[j++];
+            //右半边的当前元素大于等于左边的当前元素，取左半边的元素
             else                           a[k] = aux[i++];
         }
 
@@ -40,8 +53,11 @@ public class Merge {
     private static void sort(Comparable[] a, Comparable[] aux, int lo, int hi) {
         if (hi <= lo) return;
         int mid = lo + (hi - lo) / 2;
+        //左边的归并排序，使得左子序列有序
         sort(a, aux, lo, mid);
+        //右边的归并排序，使得右子序列有序
         sort(a, aux, mid + 1, hi);
+        //将两个有序子数组合并
         merge(a, aux, lo, mid, hi);
     }
 
@@ -50,10 +66,15 @@ public class Merge {
      * @param a the array to be sorted
      */
     public static void sort(Comparable[] a) {
+        //在排序前，先建好一个长度等于原数组长度的临时数组，
+        // 避免递归中频繁开辟空间
         Comparable[] aux = new Comparable[a.length];
         sort(a, aux, 0, a.length-1);
         assert isSorted(a);
     }
+
+
+
 
     /***************************************************************************
      *  Index mergesort.
@@ -101,6 +122,9 @@ public class Merge {
         sort(a, index, aux, mid + 1, hi);
         merge(a, index, aux, lo, mid, hi);
     }
+
+
+
 
     public static void main(String[] args) throws FileNotFoundException {
         String[] a = FileToArray.toArray("tiny.txt");
